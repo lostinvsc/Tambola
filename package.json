@@ -1,0 +1,29 @@
+{
+  "name": "tambola",
+  "version": "1.0.0",
+  "description": "online multiplayer tambola game",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "server": "nodemon server/index.js",
+    "start": "node server/index.js",
+    "build": "npm install && npm install --prefix client && npm run build --prefix client"
+  },
+  "keywords": [
+    "tambola",
+    "game",
+    "website"
+  ],
+  "author": "sumeet umbalkar",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.19.2",
+    "mongoose": "^8.14.2",
+    "nodemon": "^3.1.3",
+    "path": "^0.12.7",
+    "socket.io": "^4.7.5",
+    "tambola-generator": "^1.0.0"
+  }
+}
