@@ -15,7 +15,7 @@ import loginroute from "./routes/login.js";
 import voiceroute from "./routes/voice.js";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 const conn=process.env.MONGO_URI || 'mongodb://localhost:27017/tambola'
 // MongoDB connection
 mongoose.connect(conn).then(() => console.log("MongoDB connected"))
