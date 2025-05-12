@@ -22,11 +22,7 @@ mongoose.connect(conn).then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
 // Middleware
-app.use(cors({
-  origin: "http://localhost:5173", // Adjust as needed
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(cors());
 app.use(express.json());
 
 // HTTP and Socket.IO server
