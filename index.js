@@ -16,12 +16,9 @@ import voiceroute from "./routes/voice.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
-
+const conn=process.env.MONGO_URI || 'mongodb://localhost:27017/tambola'
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/tambola', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("MongoDB connected"))
+mongoose.connect(conn).then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
 // Middleware
