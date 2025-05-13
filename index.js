@@ -11,8 +11,10 @@ import assignticket from "./routes/assignticket.js";
 import getTickets from "./routes/gettickets.js";
 import startGameRoute from "./routes/startgame.js";
 import getsoldtickets from "./routes/getsoldtickets.js";
+import getunsoldtickets from "./routes/getunsoldtickets.js";
 import loginroute from "./routes/login.js";
 import voiceroute from "./routes/voice.js";
+ 
 
 const app = express();
 const port = process.env.PORT || 10000;
@@ -55,6 +57,7 @@ app.use('/api', winnersRoute)
 app.use('/api', getsoldtickets)
 app.use('/api', loginroute)
 app.use('/api', voiceroute)
+app.use('/api', getunsoldtickets)
 
 
 // Start server
