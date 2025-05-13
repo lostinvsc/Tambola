@@ -4,13 +4,14 @@ import Ticket from "../Models/Ticket.js";
 const router = express.Router();
 
 // Function to generate 100 tickets
-function generateTickets() {
-  return tambola.default.generateTickets(100); // Use `default` if needed for ES modules
+function generateTickets(n) {
+  return tambola.default.generateTickets(n); // Use `default` if needed for ES modules
 }
 
-router.get("/generate-tickets", async (req, res) => {
+router.post("/generate-tickets", async (req, res) => {
   try {
-    const tickets = generateTickets();
+    const {n}=req.body
+    const tickets = generateTickets(Number(n));
 
 const plainTickets = tickets.map(tickets => tickets._entries);
 // console.log(plainTickets)
