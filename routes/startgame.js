@@ -1,6 +1,7 @@
 import express from 'express';
 import Ticket from "../Models/Ticket.js";
 import Winner from "../Models/Winners.js";
+import CurrentWinner from '../Models/Winpattern.js';
 import { fullhouse, fourcorners, TopLine, MidLine, BottomLine, countMinusOnes } from "../controllers/patterns.js"
 const router = express.Router();
 
@@ -26,6 +27,10 @@ router.post('/start-game', async (req, res) => {
     await Winner.deleteMany({});
     await Winner.create({});
 
+    await CurrentWinner.deleteMany({});
+    await CurrentWinner.create({});
+
+
     const drawNumber = async () => {
         if (availableNumbers.length === 0) {
             io.emit('game-over');
@@ -48,7 +53,18 @@ router.post('/start-game', async (req, res) => {
             earlySeven: [],
         };
 
+        const currentwin = {
+            fullHouse: [],
+            topLine: [],
+            middleLine: [],
+            bottomLine: [],
+            fourCorners: [],
+            earlyFive: [],
+            earlySeven: [],
+        };
+
         const winners = await Winner.findOne({});
+        const cwinners = await CurrentWinner.findOne({});
         const l1 = winners.fullHouse.length;
         const l2 = winners.topLine.length;
         const l3 = winners.middleLine.length;
@@ -67,36 +83,61 @@ router.post('/start-game', async (req, res) => {
                 }
             }
 
-            if (winConditions.includes(1) && !l1 && fullhouse(data.ticket)) {
-                newWinners.fullHouse.push(data.name);
-                fullH = 1;
+            if (fullhouse(data.ticket)) {
+                currentwin.fullHouse.push(data.name);
+                if (winConditions.includes(1) && !l1) {
+                    newWinners.fullHouse.push(data.name);
+                }
             }
-            if (winConditions.includes(2) && !l2 && TopLine(data.ticket)) {
-                newWinners.topLine.push(data.name);
-            }
-            if (winConditions.includes(3) && !l3 && MidLine(data.ticket)) {
-                newWinners.midLine.push(data.name);
-            }
-            if (winConditions.includes(4) && !l4 && BottomLine(data.ticket)) {
-                newWinners.bottomLine.push(data.name);
-            }
-            if (winConditions.includes(5) && !l5 && fourcorners(data.ticket)) {
-                newWinners.fourCorners.push(data.name);
-            }
-            if ((winConditions.includes(6) && !l6)) {
-                const minusCount = countMinusOnes(data.ticket);
-                if (minusCount === 5) newWinners.earlyFive.push(data.name);
-
-            }
-            if ((winConditions.includes(7) && !l7)) {
-                const minusCount = countMinusOnes(data.ticket);
-                if (minusCount === 7) newWinners.earlySeven.push(data.name);
+            if (TopLine(data.ticket)) {
+                currentwin.topLine.push(data.name);
+                if (winConditions.includes(2) && !l2) {
+                    newWinners.topLine.push(data.name);
+                }
             }
 
-            if (!fullH) {
-                fullH = fullhouse(data.ticket);
-                fullHW.push(data.name)
+            // Middle Line
+            if (MidLine(data.ticket)) {
+                currentwin.middleLine.push(data.name);
+                if (winConditions.includes(3) && !l3) {
+                    newWinners.midLine.push(data.name);
+                }
             }
+
+            // Bottom Line
+            if (BottomLine(data.ticket)) {
+                currentwin.bottomLine.push(data.name);
+                if (winConditions.includes(4) && !l4) {
+                    newWinners.bottomLine.push(data.name);
+                }
+            }
+
+            // Four Corners
+            if (fourcorners(data.ticket)) {
+                currentwin.fourCorners.push(data.name);
+                if (winConditions.includes(5) && !l5) {
+                    newWinners.fourCorners.push(data.name);
+                }
+            }
+
+            // Early Five
+            const minusCount = countMinusOnes(data.ticket);
+            if (minusCount === 5) {
+                currentwin.earlyFive.push(data.name);
+                if (winConditions.includes(6) && !l6) {
+                    newWinners.earlyFive.push(data.name);
+                }
+            }
+
+            // Early Seven
+            if (minusCount === 7) {
+                currentwin.earlySeven.push(data.name);
+                if (winConditions.includes(7) && !l7) {
+                    newWinners.earlySeven.push(data.name);
+                }
+            }
+
+
         }
 
         winners.fullHouse.push(...newWinners.fullHouse);
@@ -106,6 +147,7 @@ router.post('/start-game', async (req, res) => {
         winners.fourCorners.push(...newWinners.fourCorners);
         winners.earlyFive.push(...newWinners.earlyFive);
         winners.earlySeven.push(...newWinners.earlySeven);
+
 
         let delay = seconds * 1000;
 
@@ -119,38 +161,89 @@ router.post('/start-game', async (req, res) => {
             newWinners.earlySeven.length
         ) {
             await winners.save();
+        }
 
-          
-            if (newWinners.topLine.length) {
-                io.emit('new-winner', { type: "Top line", value: [...newWinners.topLine] });
-            }
-            if (newWinners.midLine.length) {
-                io.emit('new-winner', { type: "Mid line", value: [...newWinners.midLine] });
-            }
-            if (newWinners.bottomLine.length) {
-                io.emit('new-winner', { type: "Bottom line", value: [...newWinners.bottomLine] });
-            }
-            if (newWinners.fourCorners.length) {
-                io.emit('new-winner', { type: "Four corners", value: [...newWinners.fourCorners] });
-            }
-            if (newWinners.earlyFive.length) {
-                io.emit('new-winner', { type: "Early five", value: [...newWinners.earlyFive] });
-            }
-            if (newWinners.earlySeven.length) {
-                io.emit('new-winner', { type: "Early seven", value: [...newWinners.earlySeven] });
-            }
-              if (newWinners.fullHouse.length) {
-                io.emit('new-winner', { type: "Full House", value: [...newWinners.fullHouse] });
-            } else if (fullH) {
-                io.emit('new-winner', { type: "Full House", value: fullH });
+        // const cwinners = await CurrentWinner.findOne({});
+        const winnerTypes = [
+            "fullHouse",
+            "topLine",
+            "middleLine",
+            "bottomLine",
+            "fourCorners",
+            "earlyFive",
+            "earlySeven",
+        ];
+
+        let hasNewWinners = false;
+
+        for (const type of winnerTypes) {
+            if (!Array.isArray(cwinners[type])) {
+                cwinners[type] = [];
             }
 
-            if(seconds<5){
+            if (!Array.isArray(currentwin[type])) {
+                currentwin[type] = [];
+            }
+
+            // Filter unique names only
+            const uniqueNames = currentwin[type].filter(
+                name => !cwinners[type].includes(name)
+            );
+
+            // If there are any new winners for this type, mark flag
+            if (uniqueNames.length > 0) {
+                hasNewWinners = true;
+                cwinners[type].push(...uniqueNames);
+            }
+
+            // Update currentwin to only have names that were actually added
+            currentwin[type] = uniqueNames;
+        }
+
+        // Save only if there was any new winner
+        if (hasNewWinners) {
+            await cwinners.save();
+        }
+
+
+        if (
+            currentwin.fullHouse.length ||
+            currentwin.topLine.length ||
+            currentwin.middleLine.length ||
+            currentwin.bottomLine.length ||
+            currentwin.fourCorners.length ||
+            currentwin.earlyFive.length ||
+            currentwin.earlySeven.length
+        ) {
+
+            if (currentwin.topLine.length) {
+                io.emit('new-winner', { type: "Top line", value: [...new Set(currentwin.topLine)] });
+            }
+            if (currentwin.middleLine.length) {
+                io.emit('new-winner', { type: "Middle line", value: [...new Set(currentwin.middleLine)] });
+            }
+            if (currentwin.bottomLine.length) {
+                io.emit('new-winner', { type: "Bottom line", value: [...new Set(currentwin.bottomLine)] });
+            }
+            if (currentwin.fourCorners.length) {
+                io.emit('new-winner', { type: "Four corners", value: [...new Set(currentwin.fourCorners)] });
+            }
+            if (currentwin.earlyFive.length) {
+                io.emit('new-winner', { type: "Early five", value: [...new Set(currentwin.earlyFive)] });
+            }
+            if (currentwin.earlySeven.length) {
+                io.emit('new-winner', { type: "Early seven", value: [...new Set(currentwin.earlySeven)] });
+            }
+            if (currentwin.fullHouse.length) {
+                io.emit('new-winner', { type: "Full House", value: [...new Set(currentwin.fullHouse)] });
+            }
+
+            if (seconds < 5) {
                 delay += 4000;
             }
         }
 
-        if (fullH || availableNumbers.length === 0) {
+        if (currentwin.fullHouse.length || availableNumbers.length === 0) {
             setTimeout(() => {
                 io.emit('game-over');
             }, 7000);
