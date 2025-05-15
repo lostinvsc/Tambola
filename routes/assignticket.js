@@ -11,12 +11,18 @@ router.post("/assign-ticket", async(req, res) => {
   }
   try {
 
- const updatedTicket = await Ticket.findOneAndUpdate( { ticketNumber:ticketNumber },{ $set: { name } },               
-    );
+    const ticket = await Ticket.findOne({ ticketNumber });
 
-  if (!updatedTicket) {
+    if (!ticket) {
       return res.status(404).json({ error: "Ticket not found" });
     }
+    
+    if (ticket.name) {
+      return res.status(400).json({ error: "Already sold, refresh to see" });
+    }
+
+    ticket.name = name;
+    await ticket.save();
 
     return res.status(200).json({ message: "Ticket assigned successfully" });
   } catch (error) {
