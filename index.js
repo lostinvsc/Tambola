@@ -12,6 +12,7 @@ import getTickets from "./routes/gettickets.js";
 import startGameRoute from "./routes/startgame.js";
 import getsoldtickets from "./routes/getsoldtickets.js";
 import getunsoldtickets from "./routes/getunsoldtickets.js";
+import sellsheet from "./routes/sellsheet.js";
 import loginroute from "./routes/login.js";
 import voiceroute from "./routes/voice.js";
  
@@ -58,6 +59,7 @@ app.use('/api', getsoldtickets)
 app.use('/api', loginroute)
 app.use('/api', voiceroute)
 app.use('/api', getunsoldtickets)
+app.use('/api', sellsheet)
 
 
 // Start server
