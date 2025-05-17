@@ -1,6 +1,5 @@
 import express from "express";
 import Ticket from "../Models/Ticket.js";
-
 const router = express.Router();
 
 router.post("/sellsheet", async (req, res) => {
@@ -10,8 +9,8 @@ router.post("/sellsheet", async (req, res) => {
     return res.status(400).json({ error: "Sheet number and name are required" });
   }
 
-  const startTicket = (sheetNumber - 1) * 4 + 1;
-  const endTicket = startTicket + 3;
+  const startTicket = (sheetNumber - 1) * 6 + 1;
+  const endTicket = startTicket + 5;
 
   try {
     // Fetch tickets in the sheet
