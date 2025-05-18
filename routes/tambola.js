@@ -1,7 +1,11 @@
 import express from "express";
 import { generateTambolaTicketsWithRetry } from "../controllers/generatesheet.js";
 import Ticket from "../Models/Ticket.js";
+
 const router = express.Router();
+
+// Delay function (returns a Promise that resolves after ms milliseconds)
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 router.post("/generate-tickets", async (req, res) => {
   try {
@@ -9,13 +13,12 @@ router.post("/generate-tickets", async (req, res) => {
 
     await Ticket.deleteMany({}); // Clear previous tickets
 
-    let ticketCounter = 1; // to assign ticketNumber starting from 1
+    let ticketCounter = 1;
     const allSavedTickets = [];
 
     for (let i = 0; i < n; i++) {
-      const sheetTickets = generateTambolaTicketsWithRetry(); // this returns an array of tickets (each ticket is 2D array)
-      
-      // Save each ticket of this sheet to DB with a unique ticketNumber
+      const sheetTickets = generateTambolaTicketsWithRetry();
+
       for (const ticketArr of sheetTickets) {
         const newTicket = new Ticket({
           ticket: ticketArr,
@@ -24,15 +27,16 @@ router.post("/generate-tickets", async (req, res) => {
         await newTicket.save();
         allSavedTickets.push(newTicket);
       }
+
+      await delay(130); // Delay after each sheet
     }
 
-    res.json({ tickets: allSavedTickets }); 
+    res.json({ tickets: allSavedTickets });
 
   } catch (error) {
     console.error("Error generating tickets:", error);
     res.status(500).json({ error: "Failed to generate tickets" });
   }
 });
-
 
 export default router;

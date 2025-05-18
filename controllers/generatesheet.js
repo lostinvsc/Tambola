@@ -274,7 +274,7 @@ function generateTambolaTickets() {
   return tickets;
 }
 
-export function generateTambolaTicketsWithRetry(maxRetries = 20) {
+export function generateTambolaTicketsWithRetry(maxRetries = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return generateTambolaTickets();
