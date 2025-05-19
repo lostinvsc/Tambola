@@ -20,18 +20,20 @@ router.post("/generate-tickets", async (req, res) => {
       const sheetTickets = generateTambolaTicketsWithRetry();
 
       for (const ticketArr of sheetTickets) {
-        const newTicket = new Ticket({
+        allSavedTickets.push({
           ticket: ticketArr,
           ticketNumber: ticketCounter++
         });
-        await newTicket.save();
-        allSavedTickets.push(newTicket);
       }
 
       await delay(130); // Delay after each sheet
     }
 
-    res.json({ tickets: allSavedTickets });
+        allSavedTickets.sort((a, b) => a.ticketNumber - b.ticketNumber);
+
+    const insertedTickets = await Ticket.insertMany(allSavedTickets);
+
+    res.json({ tickets: insertedTickets });
 
   } catch (error) {
     console.error("Error generating tickets:", error);
