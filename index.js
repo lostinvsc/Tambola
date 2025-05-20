@@ -26,13 +26,14 @@ mongoose.connect(conn).then(() => console.log("MongoDB connected"))
 
 // Middleware
 app.use(cors());
+
 app.use(express.json());
 
 // HTTP and Socket.IO server
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
@@ -63,6 +64,7 @@ app.use('/api', sellsheet)
 
 
 // Start server
+
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
