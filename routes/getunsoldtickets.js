@@ -5,7 +5,10 @@ import Ticket from "../Models/Ticket.js";
 
 router.get("/getunsoldtickets", async(req, res) => {
 
-const ticketsWithNoNames = await Ticket.find({ name: '' }).select('ticketNumber -_id');
+  const ticketsWithNoNames = await Ticket.find({ name: '' })
+      .select('ticketNumber -_id')
+      .sort({ ticketNumber: 1 });
+      
 const ticketNumbers = ticketsWithNoNames.map(ticket => ticket.ticketNumber);
 
 
