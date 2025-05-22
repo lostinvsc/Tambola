@@ -90,50 +90,62 @@ router.post('/start-game', async (req, res) => {
                 }
             }
             if (TopLine(data.ticket)) {
-                currentwin.topLine.push(data.name);
-                if (winConditions.includes(2) && !l2) {
-                    newWinners.topLine.push(data.name);
+                if (winConditions.includes(2)) {
+                    currentwin.topLine.push(data.name);
+                    if(!l2){
+                        newWinners.topLine.push(data.name);
+                    }
                 }
             }
 
             // Middle Line
             if (MidLine(data.ticket)) {
-                currentwin.middleLine.push(data.name);
-                if (winConditions.includes(3) && !l3) {
-                    newWinners.midLine.push(data.name);
+                if (winConditions.includes(3)) {
+                    currentwin.middleLine.push(data.name);
+                    if(!l3){
+                        newWinners.midLine.push(data.name);
+                    }
                 }
             }
 
             // Bottom Line
             if (BottomLine(data.ticket)) {
-                currentwin.bottomLine.push(data.name);
-                if (winConditions.includes(4) && !l4) {
-                    newWinners.bottomLine.push(data.name);
+                if (winConditions.includes(4)) {
+                    currentwin.bottomLine.push(data.name);
+                    if(!l4){
+                        newWinners.bottomLine.push(data.name);
+                    }
                 }
             }
 
             // Four Corners
             if (fourcorners(data.ticket)) {
-                currentwin.fourCorners.push(data.name);
-                if (winConditions.includes(5) && !l5) {
-                    newWinners.fourCorners.push(data.name);
+                if (winConditions.includes(5)) {
+                    currentwin.fourCorners.push(data.name);
+                    if(!l5){
+                        newWinners.fourCorners.push(data.name);
+                    }
                 }
             }
 
             // Early Five
             const minusCount = countMinusOnes(data.ticket);
             if (minusCount === 5) {
-                currentwin.earlyFive.push(data.name);
-                if (winConditions.includes(6) && !l6) {
-                    newWinners.earlyFive.push(data.name);
+                if (winConditions.includes(6)) {
+                    currentwin.earlyFive.push(data.name);
+                    if(!l6){
+                        newWinners.earlyFive.push(data.name);
+                    }
                 }
             }
 
             // Early Seven
             if (minusCount === 7) {
-                currentwin.earlySeven.push(data.name);
-                if (winConditions.includes(7) && !l7) {
-                    newWinners.earlySeven.push(data.name);
+                if (winConditions.includes(7)) {
+                    currentwin.earlySeven.push(data.name);
+                    if(!l7){
+                        newWinners.earlySeven.push(data.name);
+                    }
                 }
             }
 
