@@ -1,7 +1,7 @@
 import express from 'express';
 import Ticket from "../Models/Ticket.js";
 import Winner from "../Models/Winners.js";
-import CurrentWinner from '../Models/Winpattern.js';
+// import CurrentWinner from '../Models/Winpattern.js';
 import { fullhouse, fourcorners, TopLine, MidLine, BottomLine, countMinusOnes } from "../controllers/patterns.js"
 const router = express.Router();
 
@@ -27,8 +27,8 @@ router.post('/start-game', async (req, res) => {
     await Winner.deleteMany({});
     await Winner.create({});
 
-    await CurrentWinner.deleteMany({});
-    await CurrentWinner.create({});
+    // await CurrentWinner.deleteMany({});
+    // await CurrentWinner.create({});
 
 
     const drawNumber = async () => {
@@ -39,8 +39,8 @@ router.post('/start-game', async (req, res) => {
 
         const index = Math.floor(Math.random() * availableNumbers.length);
         const number = availableNumbers.splice(index, 1)[0];
-        let fullH = 0;
-        const fullHW = [];
+        // let fullH = 0;
+        // const fullHW = [];
         io.emit('number', number);
 
         const newWinners = {
@@ -64,7 +64,7 @@ router.post('/start-game', async (req, res) => {
         };
 
         const winners = await Winner.findOne({});
-        const cwinners = await CurrentWinner.findOne({});
+        // const cwinners = await CurrentWinner.findOne({});
         const l1 = winners.fullHouse.length;
         const l2 = winners.topLine.length;
         const l3 = winners.middleLine.length;
@@ -91,7 +91,7 @@ router.post('/start-game', async (req, res) => {
             }
             if (TopLine(data.ticket)) {
                 if (winConditions.includes(2)) {
-                    currentwin.topLine.push(data.name);
+                    // currentwin.topLine.push(data.name);
                     if(!l2){
                         newWinners.topLine.push(data.name);
                     }
@@ -101,7 +101,7 @@ router.post('/start-game', async (req, res) => {
             // Middle Line
             if (MidLine(data.ticket)) {
                 if (winConditions.includes(3)) {
-                    currentwin.middleLine.push(data.name);
+                    // currentwin.middleLine.push(data.name);
                     if(!l3){
                         newWinners.midLine.push(data.name);
                     }
@@ -111,7 +111,7 @@ router.post('/start-game', async (req, res) => {
             // Bottom Line
             if (BottomLine(data.ticket)) {
                 if (winConditions.includes(4)) {
-                    currentwin.bottomLine.push(data.name);
+                    // currentwin.bottomLine.push(data.name);
                     if(!l4){
                         newWinners.bottomLine.push(data.name);
                     }
@@ -121,7 +121,7 @@ router.post('/start-game', async (req, res) => {
             // Four Corners
             if (fourcorners(data.ticket)) {
                 if (winConditions.includes(5)) {
-                    currentwin.fourCorners.push(data.name);
+                    // currentwin.fourCorners.push(data.name);
                     if(!l5){
                         newWinners.fourCorners.push(data.name);
                     }
@@ -132,7 +132,7 @@ router.post('/start-game', async (req, res) => {
             const minusCount = countMinusOnes(data.ticket);
             if (minusCount === 5) {
                 if (winConditions.includes(6)) {
-                    currentwin.earlyFive.push(data.name);
+                    // currentwin.earlyFive.push(data.name);
                     if(!l6){
                         newWinners.earlyFive.push(data.name);
                     }
@@ -142,7 +142,7 @@ router.post('/start-game', async (req, res) => {
             // Early Seven
             if (minusCount === 7) {
                 if (winConditions.includes(7)) {
-                    currentwin.earlySeven.push(data.name);
+                    // currentwin.earlySeven.push(data.name);
                     if(!l7){
                         newWinners.earlySeven.push(data.name);
                     }
@@ -176,89 +176,89 @@ router.post('/start-game', async (req, res) => {
         }
 
         // const cwinners = await CurrentWinner.findOne({});
-        const winnerTypes = [
-            "fullHouse",
-            "topLine",
-            "middleLine",
-            "bottomLine",
-            "fourCorners",
-            "earlyFive",
-            "earlySeven",
-        ];
+        // const winnerTypes = [
+        //     "fullHouse",
+        //     "topLine",
+        //     "middleLine",
+        //     "bottomLine",
+        //     "fourCorners",
+        //     "earlyFive",
+        //     "earlySeven",
+        // ];
 
-        let hasNewWinners = false;
+        // let hasNewWinners = false;
 
-        for (const type of winnerTypes) {
-            if (!Array.isArray(cwinners[type])) {
-                cwinners[type] = [];
-            }
+        // for (const type of winnerTypes) {
+        //     if (!Array.isArray(cwinners[type])) {
+        //         cwinners[type] = [];
+        //     }
 
-            if (!Array.isArray(currentwin[type])) {
-                currentwin[type] = [];
-            }
+        //     if (!Array.isArray(currentwin[type])) {
+        //         currentwin[type] = [];
+        //     }
 
-            // Filter unique names only
-            const uniqueNames = currentwin[type].filter(
-                name => !cwinners[type].includes(name)
-            );
+        //     // Filter unique names only
+        //     const uniqueNames = currentwin[type].filter(
+        //         name => !cwinners[type].includes(name)
+        //     );
 
-            // If there are any new winners for this type, mark flag
-            if (uniqueNames.length > 0) {
-                hasNewWinners = true;
-                cwinners[type].push(...uniqueNames);
-            }
+        //     // If there are any new winners for this type, mark flag
+        //     if (uniqueNames.length > 0) {
+        //         hasNewWinners = true;
+        //         cwinners[type].push(...uniqueNames);
+        //     }
 
-            // Update currentwin to only have names that were actually added
-            currentwin[type] = uniqueNames;
-        }
+        //     // Update currentwin to only have names that were actually added
+        //     currentwin[type] = uniqueNames;
+        // }
 
-        // Save only if there was any new winner
-        if (hasNewWinners) {
-            await cwinners.save();
-        }
+        // // Save only if there was any new winner
+        // if (hasNewWinners) {
+        //     await cwinners.save();
+        // }
 
 
-        if (
-            currentwin.fullHouse.length ||
-            currentwin.topLine.length ||
-            currentwin.middleLine.length ||
-            currentwin.bottomLine.length ||
-            currentwin.fourCorners.length ||
-            currentwin.earlyFive.length ||
-            currentwin.earlySeven.length
-        ) {
+        // if (
+        //     currentwin.fullHouse.length ||
+        //     currentwin.topLine.length ||
+        //     currentwin.middleLine.length ||
+        //     currentwin.bottomLine.length ||
+        //     currentwin.fourCorners.length ||
+        //     currentwin.earlyFive.length ||
+        //     currentwin.earlySeven.length
+        // ) {
 
-            if (currentwin.topLine.length) {
-                io.emit('new-winner', { type: "Top line", value: [...new Set(currentwin.topLine)] });
-            }
-            if (currentwin.middleLine.length) {
-                io.emit('new-winner', { type: "Middle line", value: [...new Set(currentwin.middleLine)] });
-            }
-            if (currentwin.bottomLine.length) {
-                io.emit('new-winner', { type: "Bottom line", value: [...new Set(currentwin.bottomLine)] });
-            }
-            if (currentwin.fourCorners.length) {
-                io.emit('new-winner', { type: "Four corners", value: [...new Set(currentwin.fourCorners)] });
-            }
-            if (currentwin.earlyFive.length) {
-                io.emit('new-winner', { type: "Early five", value: [...new Set(currentwin.earlyFive)] });
-            }
-            if (currentwin.earlySeven.length) {
-                io.emit('new-winner', { type: "Early seven", value: [...new Set(currentwin.earlySeven)] });
-            }
-            if (currentwin.fullHouse.length) {
-                io.emit('new-winner', { type: "Full House", value: [...new Set(currentwin.fullHouse)] });
-            }
+        //     if (currentwin.topLine.length) {
+        //         io.emit('new-winner', { type: "Top line", value: [...new Set(currentwin.topLine)] });
+        //     }
+        //     if (currentwin.middleLine.length) {
+        //         io.emit('new-winner', { type: "Middle line", value: [...new Set(currentwin.middleLine)] });
+        //     }
+        //     if (currentwin.bottomLine.length) {
+        //         io.emit('new-winner', { type: "Bottom line", value: [...new Set(currentwin.bottomLine)] });
+        //     }
+        //     if (currentwin.fourCorners.length) {
+        //         io.emit('new-winner', { type: "Four corners", value: [...new Set(currentwin.fourCorners)] });
+        //     }
+        //     if (currentwin.earlyFive.length) {
+        //         io.emit('new-winner', { type: "Early five", value: [...new Set(currentwin.earlyFive)] });
+        //     }
+        //     if (currentwin.earlySeven.length) {
+        //         io.emit('new-winner', { type: "Early seven", value: [...new Set(currentwin.earlySeven)] });
+        //     }
+        //     if (currentwin.fullHouse.length) {
+        //         io.emit('new-winner', { type: "Full House", value: [...new Set(currentwin.fullHouse)] });
+        //     }
 
-            if (seconds < 5) {
-                delay += 4000;
-            }
-        }
+        //     if (seconds < 5) {
+        //         delay += 4000;
+        //     }
+        // }
 
         if (currentwin.fullHouse.length || availableNumbers.length === 0) {
             setTimeout(() => {
                 io.emit('game-over');
-            }, 7000);
+            }, 3000);
             return;
         }
 
