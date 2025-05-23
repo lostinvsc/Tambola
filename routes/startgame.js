@@ -228,9 +228,9 @@ router.post('/start-game', async (req, res) => {
         //     currentwin.earlySeven.length
         // ) {
 
-        //     if (currentwin.topLine.length) {
-        //         io.emit('new-winner', { type: "Top line", value: [...new Set(currentwin.topLine)] });
-        //     }
+            // if (currentwin.topLine.length) {
+            //     io.emit('new-winner', { type: "Top line", value: [...new Set(currentwin.topLine)] });
+            // }
         //     if (currentwin.middleLine.length) {
         //         io.emit('new-winner', { type: "Middle line", value: [...new Set(currentwin.middleLine)] });
         //     }
@@ -246,9 +246,9 @@ router.post('/start-game', async (req, res) => {
         //     if (currentwin.earlySeven.length) {
         //         io.emit('new-winner', { type: "Early seven", value: [...new Set(currentwin.earlySeven)] });
         //     }
-        //     if (currentwin.fullHouse.length) {
-        //         io.emit('new-winner', { type: "Full House", value: [...new Set(currentwin.fullHouse)] });
-        //     }
+            if (currentwin.fullHouse.length) {
+                io.emit('new-winner', { type: "Full House", value: [...new Set(currentwin.fullHouse)] });
+            }
 
         //     if (seconds < 5) {
         //         delay += 4000;
@@ -258,7 +258,7 @@ router.post('/start-game', async (req, res) => {
         if (currentwin.fullHouse.length || availableNumbers.length === 0) {
             setTimeout(() => {
                 io.emit('game-over');
-            }, 3000);
+            }, 4000);
             return;
         }
 
